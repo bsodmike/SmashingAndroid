@@ -70,7 +70,7 @@ public class SmashingActivity extends Activity {
     		try {
     			for (File f : path.listFiles()){
     				file_list.add(f.getPath());
-    				Log.d("files_array","adding: "+ f.getPath());
+    				Log.d("browse","adding: "+ f.getPath());
     			}
     		} catch (NullPointerException e) {
     			// TODO Auto-generated catch block
