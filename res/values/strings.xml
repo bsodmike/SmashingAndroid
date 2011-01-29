@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, SmashingActivity!</string>
+    <string name="app_name">smashingAndroid</string>
+    <color name="white">#fff</color>
+    <color name="black">#000</color>    
+</resources>
