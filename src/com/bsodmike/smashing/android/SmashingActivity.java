@@ -38,12 +38,10 @@ public class SmashingActivity extends Activity {
 				// TODO Auto-generated method stub
 				String chosenF = file_list.get(pos);
 				Log.d("onItemClick","pos: "+ pos);
-	
-				File clickedF = null;
 				
 				// absolute path
-				clickedF = new File(chosenF);
-				Log.d("onItemClick",chosenF);
+				File clickedF = new File(chosenF);
+				Log.d("onItemClick", chosenF);
 
 				if(clickedF != null)
 					browse(clickedF);
