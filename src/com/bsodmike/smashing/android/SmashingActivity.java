@@ -52,16 +52,23 @@ public class SmashingActivity extends Activity {
 					clickedF = new File(chosenF);
 					Log.d("onItemClick", chosenF);
 
-					if(clickedF != null)
-						browse(clickedF);
+					if(clickedF != null){
+						if (clickedF.isHidden()){
+							updateUI(clickedF.getName() + " is a hidden file!");
+						} else if (!clickedF.canRead()) { 
+							updateUI(clickedF.getName() + " cannot be read!");							
+						} else {
+							browse(clickedF);
+						}
+					}
 				}
 			}
 	    });
 	    init(SD_PATH);
     }    
     
-    public void updateUI(String file_path){
-    	Toast.makeText(this, file_path, Toast.LENGTH_LONG).show();
+    public void updateUI(String text){
+    	Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
     
     public void init(String path){
