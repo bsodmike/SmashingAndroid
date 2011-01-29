@@ -38,16 +38,23 @@ public class SmashingActivity extends Activity {
 				// TODO Auto-generated method stub
 				String chosenF = file_list.get(pos);
 				Log.d("onItemClick","pos: "+ pos);
-	
-				File clickedF = null;
 				
-				// absolute path
-				clickedF = new File(chosenF);
-				Log.d("onItemClick",chosenF);
+				if (chosenF.equals(".")) {
+					//reload same path
+					browse(curPath);
+				} else if(chosenF.equals("..")){
+					//browse one level up
+					browseUpOne();
+				} else {
+					File clickedF = null;
+					
+					// absolute path
+					clickedF = new File(chosenF);
+					Log.d("onItemClick", chosenF);
 
-				if(clickedF != null)
-					browse(clickedF);
-				
+					if(clickedF != null)
+						browse(clickedF);
+				}
 			}
 	    });
 	    init(SD_PATH);
@@ -65,26 +72,7 @@ public class SmashingActivity extends Activity {
     	Log.d("browse","browsing to " + path);
     	if (path.isDirectory()){
     		curPath = path;
-    		
-        	file_list.clear();
-    		
-    		// absolute path
-    		try {
-    			for (File f : path.listFiles()){
-    				file_list.add(f.getPath());
-    				Log.d("files_array","adding: "+ f.getPath());
-    			}
-    		} catch (NullPointerException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-    		
-        	adapter_items = new ArrayAdapter<String>(this,
-        	                R.layout.file_item, file_list);
-        	
-        	lv.setAdapter(adapter_items);		
-    		
-    		
+    		files_array(path.listFiles());
     	}else{
     		/*
     		 * shouldn't we do something more fancy when a file is clicked?
@@ -92,6 +80,43 @@ public class SmashingActivity extends Activity {
     		updateUI("File: "+ path.getName());
     	}
     }
+
+	private void browseUpOne(){
+		if(curPath.getParent() != null)
+			browse(curPath.getParentFile());
+	}
+    
+    private void files_array(File[] files) {
+    	file_list.clear();
+    	
+    	// add ".", i.e. refresh current directory
+    	file_list.add(".");
+    	
+    	// add  ".." == 'Up one level'
+    	if (!curPath.getAbsolutePath().equalsIgnoreCase(SD_PATH)){
+    		if(curPath.getParent() != null){
+    			Log.d("files_array", curPath.getAbsolutePath());
+	    		file_list.add("..");
+	    	}
+    	}
+    	
+
+		try {
+			// absolute path
+			for (File f : files){
+				file_list.add(f.getPath());
+				Log.d("files_array","adding: "+ f.getPath());
+			}
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+    	adapter_items = new ArrayAdapter<String>(this,
+    	                R.layout.file_item, file_list);
+    	
+    	lv.setAdapter(adapter_items);
+    }    
     
 }
 
