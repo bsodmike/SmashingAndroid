@@ -86,7 +86,6 @@ public class SmashingActivity<MyActivity> extends Activity {
         }
     }
     
-    
     public void updateUI(String text){
     	Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
