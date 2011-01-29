@@ -1,22 +1,29 @@
 package com.bsodmike.smashing.android;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SmashingActivity extends Activity {
+public class SmashingActivity<MyActivity> extends Activity {
     private static final String SD_PATH = "/sdcard";
     private File curPath = new File(SD_PATH);
+	protected static final int REQ_CODE = 0;    
 	private ArrayAdapter<String> adapter_items;
     private List<String> file_list = new ArrayList<String>();
     private ListView lv;
@@ -66,6 +73,19 @@ public class SmashingActivity extends Activity {
 	    });
 	    init(SD_PATH);
     }    
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        // See which child activity is calling us back.
+        switch (resultCode) {
+            case REQ_CODE:
+                // This is the standard resultCode that is sent back if the
+                // activity crashed or didn't doesn't supply an explicit result.
+            	init(SD_PATH);
+            default:
+                break;
+        }
+    }
+    
     
     public void updateUI(String text){
     	Toast.makeText(this, text, Toast.LENGTH_LONG).show();
@@ -77,15 +97,34 @@ public class SmashingActivity extends Activity {
     
     public void browse(File path) {
     	Log.d("browse","browsing to " + path);
+		curPath = path;
     	if (path.isDirectory()){
-    		curPath = path;
     		files_array(path.listFiles());
     	}else{
-    		/*
-    		 * shouldn't we do something more fancy when a file is clicked?
-    		 */
-    		updateUI("File: "+ path.getName());
-    	}
+    		Log.d("browse","Creating AlertDialog.Builder: " + curPath.getPath());
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Do you want to open " + curPath.getAbsolutePath() + "?")
+			       .setCancelable(false)
+			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+							try {
+								// Lets start an intent to View the file, that was clicked...
+								Intent fileOpenIntent = 
+									new Intent(android.content.Intent.ACTION_VIEW)
+										.setDataAndType(Uri.fromFile(curPath), "text/plain")
+										.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+								startActivityForResult(fileOpenIntent, REQ_CODE);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}			        	   
+			           }
+			       })
+			       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			                dialog.cancel();
+			           }
+			       }).create().show();
+		}
     }
 
 	private void browseUpOne(){
@@ -107,7 +146,6 @@ public class SmashingActivity extends Activity {
 	    	}
     	}
     	
-
 		try {
 			// absolute path
 			for (File f : files){
